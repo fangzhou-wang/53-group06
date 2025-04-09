@@ -1,2 +1,6 @@
-data/
+
 techinical/EDA/main_files
+
+data/processed-data/food_sampled_raw.csv
+data/processed-data/food_subset_raw.csv
+
