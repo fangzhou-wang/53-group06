@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 input_path = "data/processed-data/food_sampled_raw.csv"
-output_path = "data/processed-data/food_sampled_cleaned.csv"
+output_path = "data/raw-data/food_sampled_cleaned.csv"
 
 print("Cleaning sampling data...")
 df = pd.read_csv(input_path)
