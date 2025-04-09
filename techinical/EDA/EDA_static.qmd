@@ -1,0 +1,106 @@
+---
+title: "Geospatial Visualization Assignment"
+author: "Siru Wu"
+date-format: long
+lang: en
+theme: cosmo
+toc: true
+toc-title: "Table of contents"
+link-citations: true
+document-css: false
+---
+
+
+```{python}
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 设置风格
+sns.set(style="whitegrid")
+plt.rcParams['axes.labelsize'] = 12
+
+# 读取数据
+df = pd.read_csv("../../data/processed-data/food_sampled_cleaned.csv")
+
+# 营养特征字段
+nutri_cols = [
+    'energy-kcal_100g', 'fat_100g', 'saturated-fat_100g',
+    'carbohydrates_100g', 'sugars_100g', 'added-sugars_100g',
+    'fiber_100g', 'proteins_100g', 'salt_100g', 'sodium_100g',
+    'cholesterol_100g', 'vitamin-c_100g',
+    'fruits-vegetables-nuts-estimate_100g'
+]
+```
+
+---
+
+## 1. NutriScore 分布
+
+```{python}
+df['nutriscore_grade'].value_counts().sort_index().plot(kind='bar', color='skyblue')
+plt.title("NutriScore Grade Distribution")
+plt.xlabel("NutriScore Grade")
+plt.ylabel("Count")
+plt.tight_layout()
+plt.show()
+```
+
+NutriScore 等级分布图揭示了数据集中不同健康评分（从 A 到 E）的产品数量。可以观察到，评分为 E 的食品数量最多，其次依次是 D、C，而评分为 A 和 B 的样本数量明显较少。这种不均衡的分布提示后续若使用分类模型预测 NutriScore，需考虑类别不平衡问题（如使用加权损失函数、重采样等方法），否则模型可能更倾向于预测频次较高的类别。
+
+---
+
+## 2. 每个营养特征 vs NutriScore（Boxplot）
+
+```{python}
+for col in nutri_cols:
+    sns.boxplot(x='nutriscore_grade', y=col, data=df)
+    plt.title(f"{col} by NutriScore Grade")
+    plt.tight_layout()
+    plt.show()
+```
+
+---
+
+## 3. 食品大类 vs NutriScore（堆叠图）
+
+```{python}
+cross_tab = pd.crosstab(df['pnns_groups_1'], df['nutriscore_grade'], normalize='index')
+cross_tab.sort_values(by='a', ascending=False).plot(kind='barh', stacked=True, colormap='viridis')
+plt.title("NutriScore by Food Category (pnns_groups_1)")
+plt.xlabel("Proportion")
+plt.tight_layout()
+plt.show()
+```
+
+该图展示了每个一级食品分类（pnns_groups_1）内部五种 NutriScore 等级的比例分布，可观察各类别的“健康趋势”。例如，fruits and vegetables 与 cereals and potatoes 类别中 A/B 评分的比例较高，显示这些类食品整体更健康；而 sugary snacks、fat and sauces 则大多集中在 D/E，表明这些类食品更偏向不健康。这一结果为后续建模提供启示：食品类别可能是解释 NutriScore 等级的关键变量。
+
+---
+
+## 4. 缺失值比例热图
+
+```{python}
+missing_ratio = df[nutri_cols].isnull().mean() * 100
+missing_ratio.sort_values().plot(kind='barh', color='salmon')
+plt.title("Missing Value Percentage (Nutrition Fields)")
+plt.xlabel("Percentage %")
+plt.tight_layout()
+plt.show()
+```
+
+缺失值条形图显示了各营养特征的缺失比例。其中，added-sugars_100g 和 fruits-vegetables-nuts-estimate_100g 的缺失率接近 100%，其次是 vitamin-c_100g 和 cholesterol_100g，也超过 70%。这说明这些字段可能在许多食品中未被标注，或收集标准不一。根据建模需求，可考虑删除高缺失字段或构造缺失指示变量（missing indicator）用于建模。此外，大部分主要营养特征（如脂肪、能量、碳水）缺失率非常低，为模型训练提供了稳定基础。
+
+
+---
+
+## 5. 营养特征间的相关性热图
+
+```{python}
+plt.figure(figsize=(12, 8))
+sns.heatmap(df[nutri_cols].corr(), annot=True, fmt=".2f", cmap='coolwarm')
+plt.title("Correlation Between Nutrition Features")
+plt.tight_layout()
+plt.show()
+```
+
+营养字段之间的皮尔逊相关性热图揭示了潜在的共线性结构。可见 energy-kcal_100g 与 fat_100g 存在线性相关性（0.77），说明高脂产品往往热量也较高；sugars_100g 与 added-sugars_100g 的相关性达 0.92，存在一定信息冗余；salt_100g 和 sodium_100g 相关性几乎为 1，考虑到本质上它们表达的是同一营养成分，后续可以只保留其一，或合并为统一指标。这些信息为特征选择和降维提供依据，也能避免模型受高相关性干扰。

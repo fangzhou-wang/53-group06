@@ -1,5 +1,7 @@
 
-
+提取完成，共 3775988 行，26 列
+抽样完成：377598 条记录
+洗完成，剩余记录：101142
 
 Why We Sample Based on pnns_groups_1
 In this project, we aim to build a predictive model for the Nutri-Score classification using supervised learning methods such as logistic regression, support vector machines (SVM), and artificial neural networks (ANN). To ensure the training data is representative of diverse food types and to avoid modeling bias, we adopt a stratified sampling strategy based on the pnns_groups_1 field.
