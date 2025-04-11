@@ -1,0 +1,39 @@
+project:
+  type: website
+  render:
+    - "*.qmd"
+    - "*.ipynb"
+
+website:
+  title: "DSAN-5300: Project"
+  favicon: "assets/gu-logo.png"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: xtra/multiclass-portfolio-website/index.qmd
+        text: Report
+      - text: "Technical details"
+        menu: 
+          - text: Data-collection
+            href: technical-details/data-collection/main.ipynb 
+          - text: Data-cleaning
+            href: techinical/data-preprocessing/main.ipynb
+          - text: Exploratory Data Analysis
+            href: technical-details/eda/main.ipynb 
+          - text: Unsupervised Learning
+            href: technical-details/unsupervised-learning/main.ipynb 
+          - text: Supervised Learning
+            href: technical-details/supervised-learning/main.ipynb 
+          - text: Progress Log
+            href: technical-details/progress-log.qmd
+          - text: LLM usage Log
+            href: technical-details/LLM/main.ipynb
+
+format:
+  html:
+    theme: cosmo
+    bibliography: ./assets/references.bib
+    csl: ./assets/nature.csl
+    toc: true
+    css: style.css

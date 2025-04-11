@@ -1,0 +1,13 @@
+
+提取完成，共 3775988 行，26 列
+抽样完成：377598 条记录
+洗完成，剩余记录：101142
+
+Why We Sample Based on pnns_groups_1
+In this project, we aim to build a predictive model for the Nutri-Score classification using supervised learning methods such as logistic regression, support vector machines (SVM), and artificial neural networks (ANN). To ensure the training data is representative of diverse food types and to avoid modeling bias, we adopt a stratified sampling strategy based on the pnns_groups_1 field.
+
+The pnns_groups_1 variable is part of the official French national dietary classification system (PNNS – Programme National Nutrition Santé). It offers a robust, top-level categorization of food products, including groups such as Fruits and vegetables, Milk and dairy products, Beverages, and Sugary snacks. These categories are well-structured, scientifically grounded, and contain balanced sample sizes. This makes pnns_groups_1 ideal for stratification.
+
+In contrast, other categorical fields such as main_category_en, pnns_groups_2, or labels_en are either more fine-grained, user-generated, or inconsistently populated, which may lead to class imbalance, data sparsity, and less stable training behavior.
+
+By sampling 20% of products within each pnns_groups_1 category, we ensure that the final dataset used for training and evaluation contains sufficient diversity across major food groups while maintaining a manageable size for model training and interpretation. This sampling strategy improves generalizability and interpretability of the trained classifiers, especially when comparing healthiness across food types.
